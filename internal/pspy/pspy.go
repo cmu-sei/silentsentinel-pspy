@@ -1,3 +1,9 @@
+// Modifications to this file (original version available at
+// https://github.com/DominicBreuker/pspy and licensed under
+// GNU GENERAL PUBLIC LICENSE - Version 3) were made by
+// Carnegie Mellon University-Software Engineering Institute,
+// Copyright 2024 Carnegie Mellon University.  DM24-1586
+
 package pspy
 
 import (
@@ -144,8 +150,15 @@ func drainEventsFor(triggerCh chan struct{}, eventCh chan string, d time.Duratio
 		case <-sigCh:
 			return false
 		case <-time.After(d):
+			writeToFD3()
 			fsw.Enable()
 			return true
 		}
 	}
+}
+
+func writeToFD3() bool {
+	file := os.NewFile(3, "pipe")
+	_, err := file.Write([]byte(`1`))
+	return err != nil
 }
